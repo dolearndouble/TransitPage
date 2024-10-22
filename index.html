@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check App Installation</title>
+    <script>
+        // 获取 URL 参数
+        function getQueryParam(param) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function checkAppInstalled(appScheme) { 
+            var isInstalled = false;
+            if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
+                // iOS设备
+                if (typeof window.webkit != "undefined") {
+                    isInstalled = !!window.webkit.messageHandlers[appScheme];
+                } else {
+                    var iframe = document.createElement("iframe");
+                    iframe.src = appScheme + "://";
+                    iframe.style.display = "none";
+                    document.body.appendChild(iframe);
+                    setTimeout(function () {
+                        document.body.removeChild(iframe);
+                    }, 2000);
+                    isInstalled = true;
+                }
+            } else if (navigator.userAgent.match(/android/i)) {
+                var androidLink = document.createElement("a");
+                androidLink.href = appScheme + "://";
+                androidLink.style.display = "none";
+                document.body.appendChild(androidLink);
+                setTimeout(function () {
+                    document.body.removeChild(androidLink);
+                }, 2000);
+                isInstalled = true;
+            }
+            return isInstalled;
+        }
+
+        window.onload = function() {
+            // 获取传递的 appScheme 参数
+            var appScheme = getQueryParam("appScheme");
+            if (appScheme) {
+                if (checkAppInstalled(appScheme)) {
+                    window.location.href = appScheme + "://";
+                } else {
+                    alert("应用未安装，请下载安装后再使用。");
+                }
+            } else {
+                alert("没有提供 appScheme 参数！");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Check App Installation</h1>
+</body>
+</html>
