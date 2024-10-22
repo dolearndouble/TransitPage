@@ -47,6 +47,7 @@
             if (appScheme) {
                 // 检查应用是否安装
                 if (checkAppInstalled(appScheme)) {
+                    alert("应用已安装");
                     window.location.href = appScheme;// + "://";
                 } else {
                     alert("应用未安装，跳转到分享链接...");
