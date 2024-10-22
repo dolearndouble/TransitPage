@@ -11,32 +11,42 @@
             return urlParams.get(param);
         }
 
-        function checkAppInstalled(appScheme) { 
-            var isInstalled = false;
-            if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
-                if (typeof window.webkit != "undefined") {
-                    isInstalled = !!window.webkit.messageHandlers[appScheme];
-                } else {
-                    var iframe = document.createElement("iframe");
-                    iframe.src = appScheme + "://";
-                    iframe.style.display = "none";
-                    document.body.appendChild(iframe);
-                    setTimeout(function () {
-                        document.body.removeChild(iframe);
-                    }, 2000);
-                    isInstalled = true;
+        function checkAppInstalled(appScheme, callback) {
+            var hidden = false;
+
+            // 监听 visibilitychange 事件
+            function handleVisibilityChange() {
+                if (document.hidden) {
+                    hidden = true;  // 页面被隐藏，应用可能已经被打开
                 }
+            }
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
+                var iframe = document.createElement("iframe");
+                iframe.src = appScheme + "://";
+                iframe.style.display = "none";
+                document.body.appendChild(iframe);
+
+                setTimeout(function () {
+                    document.body.removeChild(iframe);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    callback(hidden); // 如果页面未被隐藏，则认为应用未安装
+                }, 2000);
             } else if (navigator.userAgent.match(/android/i)) {
                 var androidLink = document.createElement("a");
                 androidLink.href = appScheme + "://";
                 androidLink.style.display = "none";
                 document.body.appendChild(androidLink);
+
                 setTimeout(function () {
                     document.body.removeChild(androidLink);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    callback(hidden);
                 }, 2000);
-                isInstalled = true;
+            } else {
+                callback(false);  // 如果不是 iOS 或 Android，则认为未安装
             }
-            return isInstalled;
         }
 
         window.onload = function() {
@@ -46,19 +56,19 @@
 
             if (appScheme) {
                 // 检查应用是否安装
-                if (checkAppInstalled(appScheme)) {
-                    alert("应用已安装");
-                    window.location.href = appScheme;// + "://";
-                } else {
-                    alert("应用未安装，跳转到分享链接...");
-                    // 如果应用未安装，则重定向到 shareUrl
-                    if (shareUrl) {
-                        window.location.href = shareUrl;
+                checkAppInstalled(appScheme, function(isInstalled) {
+                    if (isInstalled) {
+                        alert("应用已安装");
+                        window.location.href = appScheme;
+                    } else {
+                        alert("应用未安装，跳转到分享链接...");
+                        if (shareUrl) {
+                            window.location.href = shareUrl;
+                        } else {
+                            alert("跳转链接出错,链接参数可能为空");
+                        }
                     }
-                    else{
-                        alert("跳转链接出错,链接参数可能为空");
-                    }
-                }
+                });
             } else if (shareUrl) {
                 // 如果没有提供 appScheme，直接跳转到 shareUrl
                 window.location.href = shareUrl;
