@@ -14,7 +14,6 @@
         function checkAppInstalled(appScheme) { 
             var isInstalled = false;
             if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
-                // iOS设备
                 if (typeof window.webkit != "undefined") {
                     isInstalled = !!window.webkit.messageHandlers[appScheme];
                 } else {
@@ -41,16 +40,29 @@
         }
 
         window.onload = function() {
-            // 获取传递的 appScheme 参数
+            // 获取传递的 appScheme 和 shareUrl 参数
             var appScheme = getQueryParam("appScheme");
+            var shareUrl = getQueryParam("shareUrl");
+
             if (appScheme) {
+                // 检查应用是否安装
                 if (checkAppInstalled(appScheme)) {
-                    window.location.href = appScheme + "://";
+                    window.location.href = appScheme;// + "://";
                 } else {
-                    alert("应用未安装，请下载安装后再使用。");
+                    alert("应用未安装，跳转到分享链接...");
+                    // 如果应用未安装，则重定向到 shareUrl
+                    if (shareUrl) {
+                        window.location.href = shareUrl;
+                    }
+                    else{
+                        alert("跳转链接出错,链接参数可能为空");
+                    }
                 }
+            } else if (shareUrl) {
+                // 如果没有提供 appScheme，直接跳转到 shareUrl
+                window.location.href = shareUrl;
             } else {
-                alert("没有提供 appScheme 参数！");
+                alert("没有提供 appScheme 和 shareUrl 参数！");
             }
         }
     </script>
