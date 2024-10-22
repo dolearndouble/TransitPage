@@ -47,10 +47,18 @@
             // } else {
             //     callback(false);  // 如果不是 iOS 或 Android，则认为未安装
             // }
-            setTimeout(function () {
-                    document.removeEventListener('visibilitychange', handleVisibilityChange);
-                    callback(hidden);
-                }, 2000);
+           
+          var loadDateTime = new Date();
+         window.setTimeout(function() {
+             var timeOutDateTime = new Date();
+             if(timeOutDateTime - loadDateTime < 5000) {
+                 //window.location = "要跳转的下载app页面URL";
+                 callback(false);
+             } else {
+                 window.close();
+             }
+         },2500);
+         callback(true);
         }
 
         window.onload = function() {
