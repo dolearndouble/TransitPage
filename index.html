@@ -22,31 +22,35 @@
             }
             document.addEventListener('visibilitychange', handleVisibilityChange);
 
-            if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
-                var iframe = document.createElement("iframe");
-                iframe.src = appScheme + "://";
-                iframe.style.display = "none";
-                document.body.appendChild(iframe);
+            // if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
+            //     var iframe = document.createElement("iframe");
+            //     iframe.src = appScheme + "://";
+            //     iframe.style.display = "none";
+            //     document.body.appendChild(iframe);
 
-                setTimeout(function () {
-                    document.body.removeChild(iframe);
-                    document.removeEventListener('visibilitychange', handleVisibilityChange);
-                    callback(hidden); // 如果页面未被隐藏，则认为应用未安装
-                }, 2000);
-            } else if (navigator.userAgent.match(/android/i)) {
-                var androidLink = document.createElement("a");
-                androidLink.href = appScheme + "://";
-                androidLink.style.display = "none";
-                document.body.appendChild(androidLink);
+            //     setTimeout(function () {
+            //         document.body.removeChild(iframe);
+            //         document.removeEventListener('visibilitychange', handleVisibilityChange);
+            //         callback(hidden); // 如果页面未被隐藏，则认为应用未安装
+            //     }, 2000);
+            // } else if (navigator.userAgent.match(/android/i)) {
+            //     var androidLink = document.createElement("a");
+            //     androidLink.href = appScheme + "://";
+            //     androidLink.style.display = "none";
+            //     document.body.appendChild(androidLink);
 
-                setTimeout(function () {
-                    document.body.removeChild(androidLink);
+            //     setTimeout(function () {
+            //         document.body.removeChild(androidLink);
+            //         document.removeEventListener('visibilitychange', handleVisibilityChange);
+            //         callback(hidden);
+            //     }, 2000);
+            // } else {
+            //     callback(false);  // 如果不是 iOS 或 Android，则认为未安装
+            // }
+            setTimeout(function () {
                     document.removeEventListener('visibilitychange', handleVisibilityChange);
                     callback(hidden);
                 }, 2000);
-            } else {
-                callback(false);  // 如果不是 iOS 或 Android，则认为未安装
-            }
         }
 
         window.onload = function() {
