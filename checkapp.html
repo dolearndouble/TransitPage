@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check App Installation</title>
+    <script>
+        // 获取 URL 参数
+        function getQueryParam(param) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function checkAppInstalled(appScheme, callback) {
+           
+          var loadDateTime = new Date();
+         window.setTimeout(function() {
+             var timeOutDateTime = new Date();
+             if(timeOutDateTime - loadDateTime < 5000) {
+                 //window.location = "要跳转的下载app页面URL";
+                 callback(false);
+             } else {
+                 window.close();
+             }
+         },2500);
+         callback(true);
+        }
+
+        window.onload = function() {
+            // 获取传递的 appScheme 和 shareUrl 参数
+            var appScheme = getQueryParam("appScheme");
+            var shareUrl = getQueryParam("shareUrl");
+
+            if (appScheme) {
+                // 检查应用是否安装
+                checkAppInstalled(appScheme, function(isInstalled) {
+                    if (isInstalled) {
+                       // alert("应用已安装");
+                        window.location.href = appScheme;
+                    } else {
+                       // alert("应用未安装，跳转到分享链接...");
+                        if (shareUrl) {
+                            window.location.href = shareUrl;
+                        } else {
+                            alert("跳转链接出错,链接参数可能为空");
+                        }
+                    }
+                });
+            } else if (shareUrl) {
+                // 如果没有提供 appScheme，直接跳转到 shareUrl
+                window.location.href = shareUrl;
+            } else {
+                alert("没有提供 appScheme 和 shareUrl 参数！");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Check App Installation</h1>
+</body>
+</html>
